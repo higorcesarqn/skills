@@ -24,6 +24,7 @@ Windows (PowerShell):
 ./install.ps1                    # todas as skills
 ./install.ps1 implementar-pbi    # só algumas
 ./install.ps1 -Link              # link simbólico: um git pull já atualiza as skills
+./install.ps1 -NoPlugins         # pula a instalação dos plugins
 ```
 
 Linux / macOS / Git Bash:
@@ -32,6 +33,7 @@ Linux / macOS / Git Bash:
 ./install.sh
 ./install.sh implementar-pbi
 ./install.sh --link
+./install.sh --no-plugins
 ```
 
 As skills vão para `~/.claude/skills/<nome>`. Se já existir uma skill com o mesmo nome lá, ela é substituída.
@@ -39,6 +41,22 @@ As skills vão para `~/.claude/skills/<nome>`. Se já existir uma skill com o me
 No Windows, `-Link` precisa do Modo de Desenvolvedor ligado ou de um terminal como administrador.
 
 ## Dependências
+
+### Plugins (instalados pelos scripts)
+
+Os scripts também instalam os plugins listados em [`plugins.txt`](plugins.txt), usando `claude plugin install`. Para isso, o CLI `claude` precisa estar no PATH.
+
+- [mattpocock-skills](https://github.com/mattpocock/skills), do marketplace oficial da Anthropic. Para instalar manualmente:
+
+  ```
+  claude plugin install mattpocock-skills@claude-plugins-official
+  ```
+
+  Se o marketplace não estiver configurado, rode antes `claude plugin marketplace add anthropics/claude-plugins-official`.
+
+Para adicionar outro plugin, coloque uma linha `<plugin>@<marketplace> <repositório-do-marketplace>` em `plugins.txt`.
+
+### Ferramentas
 
 - `*-maestri` e `trabalhador-floor`: app Maestri e as skills `maestri*` que ele instala
 - `implementar-issue*`: `gh` autenticado
