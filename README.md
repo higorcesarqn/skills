@@ -14,11 +14,11 @@ Minhas skills do Claude Code, para instalar em qualquer máquina.
 ## Instalação
 
 ```bash
-git clone <url-deste-repo> skills
+gh repo clone higorcesarqn/skills
 cd skills
 ```
 
-Windows (PowerShell):
+Windows (PowerShell). Se o Windows bloquear o script por política de execução, rode `powershell -ExecutionPolicy Bypass -File install.ps1`:
 
 ```powershell
 ./install.ps1                    # todas as skills
@@ -36,9 +36,17 @@ Linux / macOS / Git Bash:
 ./install.sh --no-plugins
 ```
 
-As skills vão para `~/.claude/skills/<nome>`. Se já existir uma skill com o mesmo nome lá, ela é substituída.
+O que é instalado, sempre em `~/.claude` (ou em `$CLAUDE_CONFIG_DIR`, se essa variável estiver definida):
 
-No Windows, `-Link` precisa do Modo de Desenvolvedor ligado ou de um terminal como administrador.
+- `skills/<nome>` → `~/.claude/skills/<nome>`
+- `docs/*` → `~/.claude/docs/`: o fluxo de orquestração que as skills `implementar-*` mandam seguir
+- os plugins de `plugins.txt`
+
+Se já existir algo com o mesmo nome no destino, é substituído.
+
+No Windows, `-Link` / `--link` precisa do Modo de Desenvolvedor ligado ou de um terminal como administrador.
+
+Num PC logado na mesma conta claude.ai, a `especificacao-atdd-hml` já chega sincronizada pela conta. Nesse caso, instale só as outras skills, para não ficar com duas cópias.
 
 ## Dependências
 
@@ -58,6 +66,6 @@ Para adicionar outro plugin, coloque uma linha `<plugin>@<marketplace> <reposit�
 
 ### Ferramentas
 
-- `*-maestri` e `trabalhador-floor`: app Maestri e as skills `maestri*` que ele instala
+- `*-maestri` e `trabalhador-floor`: app Maestri e as skills `maestri*` que ele instala; `bash` e `python` para os scripts em `docs/orquestracao-maestri/scripts`
 - `implementar-issue*`: `gh` autenticado
 - `implementar-pbi*` e `especificacao-atdd-hml`: `az` autenticado com acesso ao Azure DevOps
