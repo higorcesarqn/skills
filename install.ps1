@@ -2,7 +2,7 @@
 # ($env:CLAUDE_CONFIG_DIR, ou ~/.claude) e os plugins de plugins.txt.
 # Uso:
 #   ./install.ps1                       # instala todas as skills
-#   ./install.ps1 implementar-pbi ...   # instala só as indicadas
+#   ./install.ps1 implement-pbi ...     # instala só as indicadas
 #   ./install.ps1 -Link                 # cria links simbólicos em vez de copiar (git pull atualiza)
 #   ./install.ps1 -NoPlugins            # não instala os plugins de plugins.txt
 param(
@@ -17,7 +17,13 @@ $claudeDir = if ($env:CLAUDE_CONFIG_DIR) { $env:CLAUDE_CONFIG_DIR } else { Join-
 
 function Install-Entry([string]$from, [string]$to) {
     New-Item -ItemType Directory -Force (Split-Path $to) | Out-Null
-    if (Test-Path $to) { Remove-Item -Recurse -Force $to }
+    $existing = Get-Item -Force $to -ErrorAction SilentlyContinue
+    if ($existing -and ($existing.Attributes -band [IO.FileAttributes]::ReparsePoint)) {
+        # Link (ex.: do painel-maestro): apaga só o link, nunca o conteúdo do destino
+        if ($existing.PSIsContainer) { [IO.Directory]::Delete($to) } else { [IO.File]::Delete($to) }
+    } elseif ($existing) {
+        Remove-Item -Recurse -Force $to
+    }
     if ($Link) {
         New-Item -ItemType SymbolicLink -Path $to -Target $from | Out-Null
     } else {
@@ -38,7 +44,7 @@ foreach ($name in $Names) {
     Install-Entry $from (Join-Path $claudeDir "skills/$name")
 }
 
-# Docs de orquestração lidos pelas skills implementar-*
+# Docs de orquestração lidos pelas skills implement-*, specify e maestro-worker
 foreach ($entry in Get-ChildItem (Join-Path $PSScriptRoot 'docs')) {
     Install-Entry $entry.FullName (Join-Path $claudeDir "docs/$($entry.Name)")
 }

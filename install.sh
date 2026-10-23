@@ -3,7 +3,7 @@
 # ($CLAUDE_CONFIG_DIR, ou ~/.claude) e os plugins de plugins.txt.
 # Uso:
 #   ./install.sh                       # instala todas as skills
-#   ./install.sh implementar-pbi ...   # instala só as indicadas
+#   ./install.sh implement-pbi ...     # instala só as indicadas
 #   ./install.sh --link                # cria links simbólicos em vez de copiar (git pull atualiza)
 #   ./install.sh --no-plugins          # não instala os plugins de plugins.txt
 set -euo pipefail
@@ -44,7 +44,7 @@ for name in "$@"; do
   install_entry "$repo_dir/skills/$name" "$claude_dir/skills/$name"
 done
 
-# Docs de orquestração lidos pelas skills implementar-*
+# Docs de orquestração lidos pelas skills implement-*, specify e maestro-worker
 for entry in "$repo_dir"/docs/*; do
   install_entry "$entry" "$claude_dir/docs/$(basename "$entry")"
 done

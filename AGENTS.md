@@ -5,23 +5,18 @@ Repositório pessoal de skills do Claude Code. Não tem build, dependências nem
 ## Estrutura
 
 - `skills/<nome>/SKILL.md`: o `name` do frontmatter tem que ser igual ao nome da pasta. Os scripts identificam uma skill pela existência desse arquivo.
-- `docs/`: o fluxo de orquestração que as skills `implementar-*` mandam seguir. As skills e os próprios docs apontam para esses arquivos pelo caminho instalado (`~/.claude/docs/...`). Se você mudar o caminho de algum, atualize as referências.
-- `install.ps1` / `install.sh`: fazem a mesma coisa e precisam continuar equivalentes. Qualquer opção nova vai nos dois e no README. O `install.ps1` precisa continuar rodando no Windows PowerShell 5.1: nada de `??` ou ternário, e o arquivo fica em UTF-8 **com BOM** para os acentos saírem certos. O `install.sh` exporta `MSYS=winsymlinks:nativestrict`, porque sem isso o `--link` copia em silêncio no Git Bash.
+- `docs/`: os fluxos de orquestração (`orchestration-subagents`, `orchestration-maestri`, `orchestration-orca`, com os scripts deles) que as skills `implement-*` mandam seguir. As skills e os próprios docs apontam para esses arquivos pelo caminho instalado (`~/.claude/docs/...`). Se você mudar o caminho de algum, atualize as referências.
+- `install.ps1` / `install.sh`: fazem a mesma coisa e precisam continuar equivalentes. Qualquer opção nova vai nos dois e no README. O `install.ps1` precisa continuar rodando no Windows PowerShell 5.1: nada de `??` ou ternário, e o arquivo fica em UTF-8 **com BOM** para os acentos saírem certos. O `install.sh` exporta `MSYS=winsymlinks:nativestrict`, porque sem isso o `--link` copia em silêncio no Git Bash. Quando o destino já é um link (o `install-skills.js` do painel-maestro cria links), o `install.ps1` apaga só o link: no PowerShell 5.1, `Remove-Item -Recurse` num link de pasta pode apagar o conteúdo do destino.
 - `plugins.txt`: plugins de que as skills dependem, instalados pelos scripts via `claude plugin install`. Formato de cada linha: `<plugin>@<marketplace> <repo-github-do-marketplace>`. O repo serve para rodar `claude plugin marketplace add` quando o marketplace não estiver configurado.
 - `.gitattributes`: força LF em `*.sh` e `plugins.txt`. Sem isso, o checkout no Windows grava CRLF e o `install.sh` quebra no Git Bash. Todo arquivo novo que o `install.sh` for ler precisa entrar ali.
 
 ## Skills e suas dependências
 
-As skills estão em português e dependem do plugin `mattpocock-skills`: o fluxo dos trabalhadores usa as skills `/implement` e `/code-review` dele.
+`specify`, `implement-issue`, `implement-pbi`, `maestro-worker` e os docs `orchestration-*` são **cópias**. A fonte é o repositório `painel-maestro` (pasta `skills/`, mapeada no `skills/links.json` de lá), que também fornece o CLI `flow` que elas chamam (`node "$PAINEL_MAESTRO/bin/flow.js"`). Mude o fluxo lá e traga a mudança para cá; edições feitas só aqui se perdem na próxima cópia. Para sincronizar, copie `painel-maestro/skills/<skill>` para `skills/<skill>` e `painel-maestro/skills/docs/<doc>` para `docs/<doc>`. O `links.json` não vem. Os nomes antigos em português (`implementar-*`, `trabalhador-floor`, `docs/orquestracao-*`) foram aposentados lá e não voltam.
 
-As skills `implementar-*` são apenas **adaptadores de tracker** (GitHub via `gh`, Azure DevOps via REST). O fluxo de orquestração em si fica em `docs/`:
+As skills de orquestração são em inglês (contrato lido por agente), mas falam com o dono e gravam no painel em português. Elas dependem do plugin `mattpocock-skills`: usam o `/implement`, o `/code-review`, o `/to-spec` e o `/to-tickets` dele. O instalador do painel-maestro não instala plugins, por isso o `plugins.txt` daqui cuida disso.
 
-- `implementar-issue`, `implementar-pbi`: seguem `docs/orquestracao-subagentes.md`, com subagentes em worktrees.
-- `implementar-issue-maestri`, `implementar-pbi-maestri`: seguem `docs/orquestracao-maestri/README.md`, que usa os scripts `abrir-floor.sh`, `integrar.sh` e `fluxo.py` da pasta `scripts/` ao lado. O maestro roda essas skills no Ground e abre um floor por task. A `trabalhador-floor` é o protocolo que o terminal de cada floor segue.
-
-Se uma mudança mexer no fluxo, ela vai nesses docs. Nas skills só entra o que for específico do tracker. Depois de mudar o fluxo do Maestri, confira se a `trabalhador-floor` continua batendo com ele.
-
-A `especificacao-atdd-hml` é independente das outras. A fonte original está na conta claude.ai do autor (sincronizada em `~/.claude/skills/synced/`). Edições feitas aqui não voltam para lá sozinhas.
+A `atdd-spec` (antiga `especificacao-atdd-hml`) é independente das outras. A fonte original está na conta claude.ai do autor (sincronizada em `~/.claude/skills/synced/`). Edições feitas aqui não voltam para lá sozinhas: troque a skill no claude.ai também (Customize > Skills).
 
 Nas skills do Azure DevOps, a leitura e a escrita usam a REST com `curl` e Python em UTF-8, nunca o `az boards`. No Windows, o `az` corrompe acentos. Mantenha isso ao editar essas skills.
 
@@ -44,4 +39,4 @@ CLAUDE_CONFIG_DIR=$(cygpath -w $T/ps) powershell -NoProfile -ExecutionPolicy Byp
 rm -rf $T
 ```
 
-Use sempre `--no-plugins` / `-NoPlugins` nesse teste. O CLI `claude` também lê `CLAUDE_CONFIG_DIR` e baixaria os plugins na pasta temporária. Para testar a parte dos plugins, rode sem a variável: com o plugin já instalado, a resposta esperada é "already installed". Na máquina do autor, não instale a `especificacao-atdd-hml` em `~/.claude/skills`, porque ela duplicaria a versão sincronizada pela conta.
+Use sempre `--no-plugins` / `-NoPlugins` nesse teste. O CLI `claude` também lê `CLAUDE_CONFIG_DIR` e baixaria os plugins na pasta temporária. Para testar a parte dos plugins, rode sem a variável: com o plugin já instalado, a resposta esperada é "already installed". Na máquina do autor, não instale a `atdd-spec` em `~/.claude/skills`, porque ela duplicaria a versão sincronizada pela conta, nem rode o script sem `CLAUDE_CONFIG_DIR` temporário: ele trocaria os links do painel-maestro por cópias.

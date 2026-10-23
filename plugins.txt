@@ -1,3 +1,4 @@
-# Plugins de que estas skills dependem, instalados pelos scripts de instalação.
+# Plugins de que as skills dependem (as deste repositório e as do painel-maestro),
+# instalados pelos scripts de instalação.
 # Formato: <plugin>@<marketplace> <repositório GitHub do marketplace>
 mattpocock-skills@claude-plugins-official anthropics/claude-plugins-official
