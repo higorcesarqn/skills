@@ -1,5 +1,5 @@
 ---
-name: especificacao-atdd-hml
+name: atdd-spec
 description: "Gera, revisa e mantém especificações ATDD/Gherkin em português para PBIs e cards filhos no Azure DevOps, e conduz a validação funcional em HML com evidências rastreáveis. Use ao escrever critérios de aceitação, cenários Gherkin, matriz de cobertura, dados de teste, ou ao validar/aprovar um card antes do Done."
 ---
 
